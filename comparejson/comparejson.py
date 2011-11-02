@@ -9,18 +9,15 @@ def printStack(stack):
 
 def compare_nodes(n1, n2, stack):
 	substack = list(stack)
-	identical = True
 	if(type(n1) != type(n2)):
 		print "Nodes have different type, comparison makes no sense"
 		print
-		identical = False
 	elif(type(n1) == dict):
 		if n1 != n2:
 			printStack(stack)
 		n1_keyset = set(n1.keys())
 		n2_keyset = set(n2.keys())
 		if n1_keyset != n2_keyset:
-			identical = False
 			n1_exclusive = n1_keyset - n2_keyset
 			n2_exclusive = n2_keyset - n1_keyset
 			if(len(n1_exclusive) > 0):
@@ -34,7 +31,7 @@ def compare_nodes(n1, n2, stack):
 				print "Key %s is different between nodes ... going deeper" % (key,)
 				print
 				substack.append(key)
-				return compare_nodes(n1[key],n2[key],substack)
+				compare_nodes(n1[key],n2[key],substack)
 	elif(type(n1) == list):
 		if n1 != n2:
 			printStack(stack)
@@ -44,14 +41,11 @@ def compare_nodes(n1, n2, stack):
 			print "Node 2:"
 			print n2
 			print
-			identical = False
 	else:
 		if n1 != n2:
 			printStack(stack)
 			print "Node 1 has different value than node 2 (%s - %s)" % (n1,n2)
 			print
-			identical = False
-	return identical
 
 def main():
 	if len(sys.argv) != 3:
