@@ -1,15 +1,18 @@
+#!/usr/bin/python
 import urllib2, codecs
 from lxml import etree
-DEV = True
 
-# Replaces certain spots in a page with placeholders
+# opens a page, replaces parts of it with simple tags
+# and finally converts the whole thing to the desired encoding
+DEV = False
+url = "http://www.bondi.is/pages/23/newsid/81"
+filename = "/Users/gardarh/bondi/contents.html"
+from_encoding = 'UTF-8'
+to_encoding = 'ISO-8859-1'
+new_base = "http://www.bondi.is/"
+outfile = "/Users/gardarh/bondi/template.html"
 
 def main():
-	url = "http://www.bondi.is/pages/23/newsid/81"
-	filename = "contents.html"
-	encoding = 'UTF-8'
-	new_base = "http://www.bondi.is/"
-	outfile = "template.html"
 
 	parser = etree.HTMLParser(recover=True)
 
@@ -19,7 +22,7 @@ def main():
 		f.write(code)
 		f.close()
 
-	f = codecs.open(filename,encoding=encoding)
+	f = codecs.open(filename,encoding=from_encoding)
 	code = f.read()
 	f.close()
 
@@ -32,10 +35,11 @@ def main():
 	content.remove(clearfix)
 	content.text = "{{ CONTENT }}"
 
-	outstring = etree.tostring(tree, method='html', pretty_print=True, encoding=encoding)
-	outstring = outstring.replace('"/','"%s' % (new_base,))
+	outstring = etree.tostring(tree, method='html', pretty_print=True, encoding=from_encoding)
+	outstring = outstring.replace('"/','"%s' % (new_base,)).replace(from_encoding,to_encoding)
 	outhandle = open(outfile,'w')
-	outhandle.write(outstring)
+	# Output 8859-1 to avoid problems with converting php codebase to utf-8
+	outhandle.write(outstring.decode(from_encoding,errors='ignore').encode(to_encoding,errors='ignore'))
 	outhandle.close()
 
 if __name__ == "__main__":
